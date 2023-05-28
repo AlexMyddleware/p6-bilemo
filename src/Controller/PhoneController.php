@@ -47,9 +47,15 @@ class PhoneController extends AbstractController
 
     // Function to return a specific phone in the database with a JSON response
     #[Route('/api/phones/{id}', name: 'app_phone', methods: ['GET'])]
-    public function getPhone(int $id, PhoneRepository $phoneRepository, SerializerInterface $serializer): JsonResponse
+    public function getPhone(int $id, PhoneRepository $phoneRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        $phone = $phoneRepository->find($id);
+        $idCache = "getPhone_{$id}";
+
+        $phone = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $id) {
+            echo ("Cache miss for phone with ID {$id}");
+            $item->tag('phones');
+            return $phoneRepository->find($id);
+        });
 
         if (!$phone) {
             return new JsonResponse(['message' => 'Phone not found'], Response::HTTP_NOT_FOUND);
