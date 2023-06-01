@@ -23,7 +23,6 @@ class ClientController extends AbstractController
         ]);
     }
 
-    // Function to get all the users, which are the real users of the api, only accessible by the admin
     #[Route('/api/clients', name: 'app_clients', methods: ['GET'])]
     public function getClients(Request $request, UserRepository $clientRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -45,8 +44,8 @@ class ClientController extends AbstractController
             return $clientRepository->findAllWithPagination($page, $limit);
         });
 
-        $jsonClients = $serializer->serialize($clients, 'json', ['groups' => 'getClients']);
+        $jsonClients = $serializer->serialize($clients, 'json', ['groups' => 'getClients', 'json_encode_options' => JSON_PRETTY_PRINT]);
 
-        return new JsonResponse($jsonClients, Response::HTTP_OK);
+        return new JsonResponse($jsonClients, Response::HTTP_OK, [], true);
     }
 }
