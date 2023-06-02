@@ -44,8 +44,6 @@ class CustomerController extends AbstractController
         
         // Check if the current user has admin privileges
         if (!$this->isGranted('ROLE_USER')) {
-            // Throw an access denied exception
-            // throw new AccessDeniedException('Unable to access this page, you are not an admin!');
             return new JsonResponse(['message' => 'Unable to access this page, you are not a client!'], Response::HTTP_FORBIDDEN);
         }
 
@@ -82,10 +80,7 @@ class CustomerController extends AbstractController
     {
         // Check if the current user has admin privileges
         if (!$this->isGranted('ROLE_USER')) {
-            // Throw an access denied exception
-            // throw new AccessDeniedException('Unable to access this page, you are not an admin!');
             return new JsonResponse(['message' => 'Unable to access this page, you are not a client!'], Response::HTTP_FORBIDDEN);
-    
         }
 
         $version = $versioningService->getVersion();
