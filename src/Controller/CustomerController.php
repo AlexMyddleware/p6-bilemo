@@ -40,47 +40,53 @@ class CustomerController extends AbstractController
     #[Route('/api/customers', name: 'app_customers', methods: ['GET'])]
     public function getCustomers(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
-
-        
-        // Check if the current user has admin privileges
-        if (!$this->isGranted('ROLE_USER')) {
-            return new JsonResponse(['message' => 'Unable to access this page, you are not a client!'], Response::HTTP_FORBIDDEN);
-        }
-
-        // if the user is an admin, then set the $isadmin to true
-        $isAdmin = false;
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $isAdmin = true;
-        }
-
-        $version = $versioningService->getVersion();
-
-        $context = SerializationContext::create()->setGroups(['getCustomers']);
-
-        $context->setVersion($version);
-
-        // extract the page number and limit from url parameters
-        $page = $request->query->get('page', 1);
-        $limit = $request->query->get('limit', 10);
-
-        $idCache = "getAllCustomers_{$page}_{$limit}";
-
-        // get the current logged in user
-        // The potential intellephense error is not an error, it is a bug in the intellephense extension that falsely interpret the user as the UserInterface but it is the User entity which indeed has the getId() method
-        $user = $this->getUser()->getId();
-
-        $customerList = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $user, $isAdmin) {
-            $this->logger->info("Cache miss for the customer list with page {$page} and limit {$limit}");
-            $item->tag('customers');
-            if ($isAdmin) {
-                return $customerRepository->findAllWithPagination($page, $limit);
+        try {
+            // Check if the current user has admin privileges
+            if (!$this->isGranted('ROLE_USER')) {
+                return new JsonResponse(['message' => 'Unable to access this page, you are not a client!'], Response::HTTP_FORBIDDEN);
             }
-            return $customerRepository->findAllWithPaginationForCurrentClient($page, $limit, $user);
-        });
 
-        $jsonCustomers = $serializer->serialize($customerList, 'json', $context);
+            // if the user is an admin, then set the $isAdmin to true
+            $isAdmin = false;
+            if ($this->isGranted('ROLE_ADMIN')) {
+                $isAdmin = true;
+            }
 
-        return new JsonResponse($jsonCustomers, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+            $version = $versioningService->getVersion();
+
+            $context = SerializationContext::create()->setGroups(['getCustomers']);
+
+            $context->setVersion($version);
+
+            // extract the page number and limit from url parameters
+            $page = $request->query->get('page', 1);
+            $limit = $request->query->get('limit', 10);
+
+            $idCache = "getAllCustomers_{$page}_{$limit}";
+
+            // get the current logged in user
+            $user = $this->getUser()->getId();
+
+            $customerList = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $user, $isAdmin) {
+                $this->logger->info("Cache miss for the customer list with page {$page} and limit {$limit}");
+                $item->tag('customers');
+                if ($isAdmin) {
+                    return $customerRepository->findAllWithPagination($page, $limit);
+                }
+                return $customerRepository->findAllWithPaginationForCurrentClient($page, $limit, $user);
+            });
+
+            if (empty($customerList)) {
+                return new JsonResponse(['message' => 'No customers found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            $jsonCustomers = $serializer->serialize($customerList, 'json', $context);
+
+            return new JsonResponse($jsonCustomers, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+        } catch (\Exception $e) {
+            // Handle the exception
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Function to get a specific user, only accessible by a logged in client
