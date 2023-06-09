@@ -69,6 +69,7 @@ class PhoneController extends AbstractController
         // Create the serialization context
         $context = SerializationContext::create()->setGroups(['getPhone']);
 
+        // Create the cache id
         $idCache = "getPhone_{$id}";
 
         $phone = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $id) {
