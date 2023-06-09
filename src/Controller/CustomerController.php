@@ -47,6 +47,12 @@ class CustomerController extends AbstractController
             return new JsonResponse(['message' => 'Unable to access this page, you are not a client!'], Response::HTTP_FORBIDDEN);
         }
 
+        // if the user is an admin, then set the $isadmin to true
+        $isAdmin = false;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $isAdmin = true;
+        }
+
         $version = $versioningService->getVersion();
 
         $context = SerializationContext::create()->setGroups(['getCustomers']);
@@ -63,9 +69,12 @@ class CustomerController extends AbstractController
         // The potential intellephense error is not an error, it is a bug in the intellephense extension that falsely interpret the user as the UserInterface but it is the User entity which indeed has the getId() method
         $user = $this->getUser()->getId();
 
-        $customerList = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $user) {
+        $customerList = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $user, $isAdmin) {
             $this->logger->info("Cache miss for the customer list with page {$page} and limit {$limit}");
             $item->tag('customers');
+            if ($isAdmin) {
+                return $customerRepository->findAllWithPagination($page, $limit);
+            }
             return $customerRepository->findAllWithPaginationForCurrentClient($page, $limit, $user);
         });
 
