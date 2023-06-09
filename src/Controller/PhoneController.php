@@ -35,26 +35,31 @@ class PhoneController extends AbstractController
     #[Route('/api/phones', name: 'app_phones', methods: ['GET'])]
     public function getPhones(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        // Create the serialization context
-        $context = SerializationContext::create()->setGroups(['getPhones']);
+        try {
+            $context = SerializationContext::create()->setGroups(['getPhones']);
 
-        
-        // extract the page number and limit from url parameters
-        $page = $request->query->get('page', 1);
-        $limit = $request->query->get('limit', 10);
+            $page = $request->query->get('page', 1);
+            $limit = $request->query->get('limit', 10);
 
-        $idCache = "getAllPhones_{$page}_{$limit}";
+            $idCache = "getAllPhones_{$page}_{$limit}";
 
+            $phoneList = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit) {
+                $this->logger->info("Cache miss for the phone list with page {$page} and limit {$limit}");
+                $item->tag('phones');
+                return $phoneRepository->findAllWithPagination($page, $limit);
+            });
 
-        $phoneList = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit) {
-            $this->logger->info("Cache miss for the phone list with page {$page} and limit {$limit}");
-            $item->tag('phones');
-            return $phoneRepository->findAllWithPagination($page, $limit);
-        });
+            if (empty($phoneList)) {
+                return new JsonResponse(['error' => 'No phones found'], Response::HTTP_NOT_FOUND);
+            }
 
-        $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
+            $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
 
-        return new JsonResponse($jsonPhoneList, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+            return new JsonResponse($jsonPhoneList, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+        } catch (\Exception $e) {
+            $this->logger->error("Error in getPhones: {$e->getMessage()}");
+            return new JsonResponse(['error' => 'Server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Function to return a specific phone in the database with a JSON response
