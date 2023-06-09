@@ -19,7 +19,8 @@ class ClientController extends AbstractController
 {
     private $logger;
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 
@@ -35,9 +36,9 @@ class ClientController extends AbstractController
     // Function to get all the users, which are the real users of the api, only accessible by the admin
     #[Route('/api/clients', name: 'app_clients', methods: ['GET'])]
     public function getClients(
-        Request $request, 
-        UserRepository $clientRepository, 
-        SerializerInterface $serializer, 
+        Request $request,
+        UserRepository $clientRepository,
+        SerializerInterface $serializer,
         TagAwareCacheInterface $cache
     ): JsonResponse {
         // Check if the current user has admin privileges
@@ -72,7 +73,6 @@ class ClientController extends AbstractController
             $jsonClientList = $serializer->serialize($clientList, 'json', $context);
 
             return new JsonResponse($jsonClientList, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
-
         } catch (\Exception $e) {
             $this->logger->error("Error occurred while getting clients: {$e->getMessage()}");
             return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -81,11 +81,14 @@ class ClientController extends AbstractController
 
     // Function to return a specific client in the database with a JSON response
     #[Route('/api/clients/{id}', name: 'app_client', methods: ['GET'])]
-    public function getClient(int $id, UserRepository $clientRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
-    {
-
-         // Check if the current user has admin privileges
-         if (!$this->isGranted('ROLE_ADMIN')) {
+    public function getClient(
+        int $id,
+        UserRepository $clientRepository,
+        SerializerInterface $serializer,
+        TagAwareCacheInterface $cache
+    ): JsonResponse {
+        // Check if the current user has admin privileges
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return new JsonResponse(['message' => 'Unable to access this page, you are not an admin!'], Response::HTTP_FORBIDDEN);
         }
 
@@ -94,19 +97,23 @@ class ClientController extends AbstractController
 
         $idCache = "getClient_{$id}";
 
-        $client = $cache->get($idCache, function (ItemInterface $item) use ($clientRepository, $id) {
-            $this->logger->info("Cache miss for the client with id {$id}");
-            $item->tag('client');
-            return $clientRepository->find($id);
-        });
+        try {
+            $client = $cache->get($idCache, function (ItemInterface $item) use ($clientRepository, $id) {
+                $this->logger->info("Cache miss for the client with id {$id}");
+                $item->tag('client');
+                return $clientRepository->find($id);
+            });
 
-        if (!$client) {
-            return new JsonResponse(['message' => 'Client not found'], Response::HTTP_NOT_FOUND);
+            if (!$client) {
+                return new JsonResponse(['message' => 'Client not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $jsonClient = $serializer->serialize($client, 'json', $context);
+
+            return new JsonResponse($jsonClient, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+        } catch (\Exception $e) {
+            $this->logger->error("Error occurred while getting client: {$e->getMessage()}");
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $jsonClient = $serializer->serialize($client, 'json', $context);
-
-        return new JsonResponse($jsonClient, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
-
     }
 }
