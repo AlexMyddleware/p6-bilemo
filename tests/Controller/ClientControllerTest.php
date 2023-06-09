@@ -23,7 +23,7 @@ class ClientControllerTest extends WebTestCase
 
     public function testGetAllClients()
     {
-        // $this->markTestSkipped('The test to get all clients has been skipped.');
+        // $this->markTestSkipped('The test to get all clients has been skipped');
 
         $client = static::createClient();
 
