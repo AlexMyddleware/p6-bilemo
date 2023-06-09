@@ -64,27 +64,36 @@ class PhoneController extends AbstractController
 
     // Function to return a specific phone in the database with a JSON response
     #[Route('/api/phones/{id}', name: 'app_phone', methods: ['GET'])]
-    public function getPhone(int $id, PhoneRepository $phoneRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
-    {
+    public function getPhone(
+        int $id,
+        PhoneRepository $phoneRepository,
+        SerializerInterface $serializer,
+        TagAwareCacheInterface $cache
+    ): JsonResponse {
         // Create the serialization context
         $context = SerializationContext::create()->setGroups(['getPhone']);
 
         // Create the cache id
         $idCache = "getPhone_{$id}";
 
-        $phone = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $id) {
-            $this->logger->info("Cache miss for the phone with id {$id}");
-            $item->tag('phone');
-            return $phoneRepository->find($id);
-        });
+        try {
+            $phone = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $id) {
+                $this->logger->info("Cache miss for the phone with id {$id}");
+                $item->tag('phone');
+                return $phoneRepository->find($id);
+            });
 
-        if (!$phone) {
-            return new JsonResponse(['message' => 'Phone not found'], Response::HTTP_NOT_FOUND);
+            if (!$phone) {
+                return new JsonResponse(['message' => 'Phone not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $jsonPhone = $serializer->serialize($phone, 'json', $context);
+
+            return new JsonResponse($jsonPhone, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
+        } catch (\Exception $e) {
+            $errorMessage = 'An error occurred while retrieving the phone: ' . $e->getMessage();
+            return new JsonResponse(['error' => $errorMessage], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $jsonPhone = $serializer->serialize($phone, 'json', $context);
-
-        return new JsonResponse($jsonPhone, Response::HTTP_OK, ['json_encode_options' => JSON_PRETTY_PRINT], true);
-
     }
+
 }
