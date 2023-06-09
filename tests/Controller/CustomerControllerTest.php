@@ -81,7 +81,7 @@ class CustomerControllerTest extends WebTestCase
         $this->assertJson($client->getResponse()->getContent());
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
-        $this->assertCount(3, $responseData);
+        $this->assertCount(5, $responseData);
     }
 
     public function testGetAllCustomersOfTheNormalClient()
@@ -143,8 +143,6 @@ class CustomerControllerTest extends WebTestCase
         $testClient = $userRepository->findOneBy(['email' => 'admin@bilemo.com']);
 
         $client->loginUser($testClient);
-
-        // $client->request('GET', '/api/customers/3');
 
         $client->request('GET', '/api/customers/3', [], [], [
             'HTTP_ACCEPT' => 'application/json; version=2.0',

@@ -81,4 +81,30 @@ class PhoneControllerTest extends WebTestCase
             $this->assertContains($phone['brand'], $brands);
             $this->assertContains($phone['model'], $models);
     }
+
+    public function testGetPhoneNotFound()
+    {
+        $client = static::createClient();
+
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $testUser = $userRepository->findOneBy(['email' => 'margesimpson@bilemo.com']);
+
+        $client->loginUser($testUser);
+
+        // Make a GET request to the /api/phones/{id} endpoint with an ID of 1000
+        $client->request('GET', '/api/phones/1000');
+
+        // Assert that the response status code is 404 NOT FOUND
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+
+        // Assert that the response content type is JSON
+        $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'application/json'));
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('message', $responseData);
+
+        $this->assertEquals('Phone not found', $responseData['message']);
+    }
 }
