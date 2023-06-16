@@ -50,6 +50,7 @@ jobs:
           # `PGPASSWORD=postgres_password psql ...`
           PGPASSWORD: postgres_password
   build:
+    needs: postgres-job
     runs-on: ubuntu-20.04
 
     steps:
