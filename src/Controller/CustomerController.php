@@ -372,7 +372,36 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to delete a customer, only accessible by a logged in client
+    /**
+     * @OA\Delete(
+     *     path="/api/customers/{id}",
+     *     summary="Delete an existing customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Customer deleted")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you are not a client or not the owner of this customer"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while deleting the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_delete', methods: ['DELETE'])]
     public function deleteCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache): JsonResponse
     {
