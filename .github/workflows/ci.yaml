@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v2
@@ -12,11 +12,6 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: composer update
-      run: composer update
-
-    - name: composer install
-      run: composer install
 
     - name: Install Dependencies
       run: composer install --prefer-dist --no-progress
