@@ -152,7 +152,8 @@ class CustomerController extends AbstractController
      *         response=500,
      *         description="An error occurred while retrieving the customer"
      *     ),
-     *     security={{"bearerAuth":{}}}
+     *     security={{"bearerAuth":{}}},
+     *   tags={"Customers"}
      * )
      */
     #[Route('/api/customers/{id}', name: 'app_customers_id', methods: ['GET'])]
