@@ -67,4 +67,4 @@ jobs:
 
 
 env:
-  DATABASE_URL: "postgresql://postgres_user:postgres_password@localhost:5432/postgres_db?serverVersion=15&charset=utf8"
+  DATABASE_URL: "postgresql://postgres_user:postgres_password@postgres:5432/postgres_db?serverVersion=15&charset=utf8"
