@@ -1,4 +1,6 @@
 {
+    "name": "alexmyddleware/p6-bilemo",
+    "description": "Bilmo API",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
