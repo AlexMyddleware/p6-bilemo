@@ -124,32 +124,37 @@ class CustomerController extends AbstractController
         }
     }
 
-/**
-    * Function to get a customer by id
-    *
-    * @OA\Response(
-    *     response=200,
-    *     description="Returns the customer with the given id",
-    *     @OA\JsonContent(
-    *        type="object",
-    *        @OA\Schema(ref=@Model(type=Customer::class, groups={"getCustomer"}))
-    *     )
-    * )
-    * @OA\Parameter(
-    *     name="id",
-    *     in="path",
-    *     description="The id of the customer",
-    *     @OA\Schema(type="int")
-    * )
-    *
-    *
-    * @OA\Tag(name="Customers")
-    *
-    * @param CustomerRepository $customerRepository
-    * @param SerializerInterface $serializer
-    * @param Request $request
-    * @return JsonResponse
-    */
+    /**
+     * @OA\Get(
+     *     path="/api/customers/{id}",
+     *     summary="Retrieve a specific customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to retrieve",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, not a client or customer does not belong to the client"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found, either it is not yours or it was deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while retrieving the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_id', methods: ['GET'])]
     public function getCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
