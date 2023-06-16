@@ -277,7 +277,47 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to update a customer, only accessible by a logged in client
+    /**
+     * @OA\Put(
+     *     path="/api/customers/{id}",
+     *     summary="Update an existing customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to update",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Data to update the customer",
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the updated customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, email and password are required"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you are not a client or not the owner of this customer"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while updating the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_update', methods: ['PUT'])]
     public function updateCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache): JsonResponse
     {
