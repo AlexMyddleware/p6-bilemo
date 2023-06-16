@@ -12,6 +12,12 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
+    - name: composer update
+      run: composer update
+
+    - name: composer install
+      run: composer install
+
     - name: Install Dependencies
       run: composer install --prefer-dist --no-progress
 
