@@ -18,3 +18,7 @@ jobs:
 
     - name: Run tests (PHP Unit)
       run: ./vendor/bin/phpunit
+
+
+env:
+  DATABASE_URL: "postgresql://app:!ChangeMe!@locashost:5432/app?serverVersion=15&charset=utf8"
