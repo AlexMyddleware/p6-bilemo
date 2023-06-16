@@ -15,6 +15,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Psr\Log\LoggerInterface;
+use App\Entity\Customer;
+
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class CustomerController extends AbstractController
 {
@@ -36,7 +41,37 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    // Function to get all the users, which are the real users of the api, only accessible by the admin
+    /**
+    * Function to get all the customers
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the list of customers",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Customer::class, groups={"getCustomers"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page number of the list of customers",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="The limit of customers per page",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Customers")
+     *
+     * @param CustomerRepository $customerRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/customers', name: 'app_customers', methods: ['GET'])]
     public function getCustomers(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
