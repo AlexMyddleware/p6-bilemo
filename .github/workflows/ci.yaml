@@ -26,6 +26,9 @@ jobs:
 
     - name: Install PostgreSQL client
       run: |
+        sudo rm /var/lib/apt/lists/lock
+        sudo rm /var/cache/apt/archives/lock
+        sudo rm /var/lib/dpkg/lock*
         sudo apt-get update
         apt-get install --yes postgresql-client
 
