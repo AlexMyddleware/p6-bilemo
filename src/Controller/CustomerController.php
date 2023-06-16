@@ -124,7 +124,32 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to get a specific user, only accessible by a logged in client
+/**
+    * Function to get a customer by id
+    *
+    * @OA\Response(
+    *     response=200,
+    *     description="Returns the customer with the given id",
+    *     @OA\JsonContent(
+    *        type="object",
+    *        @OA\Schema(ref=@Model(type=Customer::class, groups={"getCustomer"}))
+    *     )
+    * )
+    * @OA\Parameter(
+    *     name="id",
+    *     in="path",
+    *     description="The id of the customer",
+    *     @OA\Schema(type="int")
+    * )
+    *
+    *
+    * @OA\Tag(name="Customers")
+    *
+    * @param CustomerRepository $customerRepository
+    * @param SerializerInterface $serializer
+    * @param Request $request
+    * @return JsonResponse
+    */
     #[Route('/api/customers/{id}', name: 'app_customers_id', methods: ['GET'])]
     public function getCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
