@@ -198,7 +198,40 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to create a new customer, only accessible by a logged in client
+    /**
+     * @OA\Post(
+     *     path="/api/customers",
+     *     summary="Create a new customer",
+     *     @OA\RequestBody(
+     *         description="Data for the new customer",
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Returns the created customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, email and password are required"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, you are not a client"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while creating the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers', name: 'app_customers_create', methods: ['POST'])]
     public function createCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
