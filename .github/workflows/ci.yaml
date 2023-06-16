@@ -21,4 +21,4 @@ jobs:
 
 
 env:
-  DATABASE_URL: "postgresql://app:!ChangeMe!@locashost:5432/app?serverVersion=15&charset=utf8"
+  DATABASE_URL: "postgresql://app:!ChangeMe!@localhost:5432/app?serverVersion=15&charset=utf8"
