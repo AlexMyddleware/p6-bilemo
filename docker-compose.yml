@@ -9,6 +9,8 @@ services:
       sh -c "chown -R www-data:www-data /var/www/html/var &&
               chmod -R 777 /var/www/html/var &&
               php-fpm"
+    depends_on:
+      - database_test
   ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine

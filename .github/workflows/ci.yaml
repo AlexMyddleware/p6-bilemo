@@ -1,0 +1,50 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install PostgreSQL client
+      run: |
+        sudo rm /var/lib/apt/lists/lock
+        sudo rm /var/cache/apt/archives/lock
+        sudo rm /var/lib/dpkg/lock*
+        sudo apt-get update
+        apt-get install --yes postgresql-client
+
+    - name: Query database
+      run: psql -h postgres -d postgres_db -U postgres_user -c 'SELECT 1;'
+      env:
+        PGPASSWORD: postgres_password
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install Dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run tests (PHP Unit)
+      run: ./vendor/bin/phpunit
+
+    env:
+      DATABASE_URL: "postgresql://postgres_user:postgres_password@postgres:5432/postgres_db?serverVersion=15&charset=utf8"
