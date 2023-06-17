@@ -13,6 +13,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Psr\Log\LoggerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
+use App\Entity\Phone;
+
 
 class PhoneController extends AbstractController
 {
@@ -31,7 +36,37 @@ class PhoneController extends AbstractController
         ]);
     }
 
-    // Function to return all phones in the database with a JSON response
+    /**
+    * Function to get all the phones
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the list of phones",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Phone::class, groups={"getPhones"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page number of the list of phones",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="The limit of phones per page",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Phones")
+     *
+     * @param PhoneRepository $phoneRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/phones', name: 'app_phones', methods: ['GET'])]
     public function getPhones(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -62,7 +97,38 @@ class PhoneController extends AbstractController
         }
     }
 
-    // Function to return a specific phone in the database with a JSON response
+    /**
+     * @OA\Get(
+     *     path="/api/phones/{id}",
+     *     summary="Retrieve a specific phone",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the phone to retrieve",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the phone data",
+     *         @OA\JsonContent(ref="#/components/schemas/Phone")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, not a client or phone does not belong to the client"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Phone not found, either it is not yours or it was deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while retrieving the phone"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *   tags={"Phones"}
+     * )
+     */
     #[Route('/api/phones/{id}', name: 'app_phone', methods: ['GET'])]
     public function getPhone(
         int $id,
