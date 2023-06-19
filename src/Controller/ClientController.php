@@ -14,6 +14,12 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Psr\Log\LoggerInterface;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
+
+use App\Entity\User;
+
 
 class ClientController extends AbstractController
 {
@@ -33,7 +39,37 @@ class ClientController extends AbstractController
         ]);
     }
 
-    // Function to get all the users, which are the real users of the api, only accessible by the admin
+    /**
+    * Function to get all the clients
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the list of clients",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"getClients"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page number of the list of clients",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="The limit of clients per page",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Clients")
+     *
+     * @param User $clientRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/clients', name: 'app_clients', methods: ['GET'])]
     public function getClients(
         Request $request,
@@ -79,7 +115,38 @@ class ClientController extends AbstractController
         }
     }
 
-    // Function to return a specific client in the database with a JSON response
+    /**
+     * @OA\Get(
+     *     path="/api/clients/{id}",
+     *     summary="Retrieve a specific client",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the client to retrieve",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the client data",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, not a client or client does not belong to the client"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Client not found, either it is not yours or it was deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while retrieving the client"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *   tags={"Clients"}
+     * )
+     */
     #[Route('/api/clients/{id}', name: 'app_client', methods: ['GET'])]
     public function getClient(
         int $id,

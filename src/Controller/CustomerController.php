@@ -15,6 +15,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Psr\Log\LoggerInterface;
+use App\Entity\Customer;
+
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class CustomerController extends AbstractController
 {
@@ -36,7 +41,37 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    // Function to get all the users, which are the real users of the api, only accessible by the admin
+    /**
+    * Function to get all the customers
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the list of customers",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Customer::class, groups={"getCustomers"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page number of the list of customers",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="The limit of customers per page",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Customers")
+     *
+     * @param CustomerRepository $customerRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/customers', name: 'app_customers', methods: ['GET'])]
     public function getCustomers(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
@@ -89,7 +124,38 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to get a specific user, only accessible by a logged in client
+    /**
+     * @OA\Get(
+     *     path="/api/customers/{id}",
+     *     summary="Retrieve a specific customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to retrieve",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, not a client or customer does not belong to the client"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found, either it is not yours or it was deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while retrieving the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *   tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_id', methods: ['GET'])]
     public function getCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache, VersioningService $versioningService): JsonResponse
     {
@@ -132,7 +198,40 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to create a new customer, only accessible by a logged in client
+    /**
+     * @OA\Post(
+     *     path="/api/customers",
+     *     summary="Create a new customer",
+     *     @OA\RequestBody(
+     *         description="Data for the new customer",
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Returns the created customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, email and password are required"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized, you are not a client"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while creating the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers', name: 'app_customers_create', methods: ['POST'])]
     public function createCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -178,7 +277,47 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to update a customer, only accessible by a logged in client
+    /**
+     * @OA\Put(
+     *     path="/api/customers/{id}",
+     *     summary="Update an existing customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to update",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Data to update the customer",
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns the updated customer data",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request, email and password are required"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you are not a client or not the owner of this customer"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while updating the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_update', methods: ['PUT'])]
     public function updateCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -233,7 +372,36 @@ class CustomerController extends AbstractController
         }
     }
 
-    // Function to delete a customer, only accessible by a logged in client
+    /**
+     * @OA\Delete(
+     *     path="/api/customers/{id}",
+     *     summary="Delete an existing customer",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The id of the customer to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Customer deleted")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden, you are not a client or not the owner of this customer"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="An error occurred while deleting the customer"
+     *     ),
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Customers"}
+     * )
+     */
     #[Route('/api/customers/{id}', name: 'app_customers_delete', methods: ['DELETE'])]
     public function deleteCustomer(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, $id, TagAwareCacheInterface $cache): JsonResponse
     {
