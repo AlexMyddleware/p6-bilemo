@@ -115,3 +115,8 @@ when@test:
 
 You can import the Postman collection and environment from the postman directory to test the API endpoints.
 Go to your postman, click on import and select the postman json directory at the root of the project. You will see the collection and environment imported.
+
+![GitHub top language](https://img.shields.io/github/languages/top/AlexMyddleware/p6-bilemo)
+[![GitHub issues](https://img.shields.io/github/issues/AlexMyddleware/p6-bilemo)](https://github.com/AlexMyddleware/p6-bilemo/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/AlexMyddleware/p6-bilemo)](https://github.com/AlexMyddleware/p6-bilemo/issues?q=is%3Aissue+is%3Aclosed)
+
