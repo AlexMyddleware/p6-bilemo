@@ -109,3 +109,8 @@ when@test:
     doctrine:
         dbal:
         url: '%env(resolve:DATABASE_URL)%' # Use a separate test database
+
+## Postman suite
+
+You can import the Postman collection and environment from the postman directory to test the API endpoints.
+Go to your postman, click on import and select the postman json directory at the root of the project. You will see the collection and environment imported.

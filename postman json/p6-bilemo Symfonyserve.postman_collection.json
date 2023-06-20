@@ -1,0 +1,1463 @@
+{
+	"info": {
+		"_postman_id": "0cf2e519-22a6-46c0-ab76-e4d46a21d277",
+		"name": "p6-bilemo Symfonyserve",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18222978"
+	},
+	"item": [
+		{
+			"name": "not admin when admin is needed",
+			"item": [
+				{
+					"name": "Login Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"if (responseJson.token) {\r",
+									"    pm.environment.set(\"access_token\", responseJson.token);\r",
+									"}\r",
+									"\r",
+									"// Check if the status code is 200 (OK)\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if the response body has a token\r",
+									"pm.test(\"Response should have a JWT token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('token');\r",
+									"});\r",
+									"\r",
+									"// Check if token is not empty\r",
+									"pm.test(\"Token is not empty\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"// Optionally, check if the token has correct format (simple regex check)\r",
+									"pm.test(\"Token is in JWT format\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var jwtRegex = /^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$/;\r",
+									"    pm.expect(jwtRegex.test(jsonData.token)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"margesimpson@bilemo.com\",\r\n    \"password\": \"MargeSimpson3224#\"\r\n}"
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/login_check",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"login_check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the clients Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains an error message\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"Unable to access this page, you are not an admin!\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/clients?page=1&limit=5",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"clients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "correctly autenticated normal",
+			"item": [
+				{
+					"name": "Login Check Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"if (responseJson.token) {\r",
+									"    pm.environment.set(\"access_token\", responseJson.token);\r",
+									"}\r",
+									"\r",
+									"// Check if the status code is 200 (OK)\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if the response body has a token\r",
+									"pm.test(\"Response should have a JWT token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('token');\r",
+									"});\r",
+									"\r",
+									"// Check if token is not empty\r",
+									"pm.test(\"Token is not empty\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"// Optionally, check if the token has correct format (simple regex check)\r",
+									"pm.test(\"Token is in JWT format\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var jwtRegex = /^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$/;\r",
+									"    pm.expect(jwtRegex.test(jsonData.token)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"margesimpson@bilemo.com\",\r\n    \"password\": \"MargeSimpson3224#\"\r\n}"
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/login_check",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"login_check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test the phones",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay to process\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody('error');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/phones/test",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"phones",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test the Clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay to process\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody('error');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/clients/test",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"clients",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test the customers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay to process\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody('error');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/customers/test",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"customers",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the phones",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains phone data\r",
+									"pm.test(\"Response contains phone data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test: Check the length of the response array is as expected\r",
+									"pm.test(\"Response array length is 3\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.length(3);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/phones?page=1&limit=3",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"phones"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the customers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, version=2.0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/customers?page=1&limit=100",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the email\r",
+									"pm.test(\"Response contains the email\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"chou@gmail.com\");\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the delete link\r",
+									"pm.test(\"Response contains the delete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"delete\");\r",
+									"    pm.expect(jsonData._links.delete).to.have.property(\"href\", \"/api/customers/1\");\r",
+									"    pm.expect(jsonData._links.delete).to.have.property(\"method\", \"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the update link\r",
+									"pm.test(\"Response contains the update link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"update\");\r",
+									"    pm.expect(jsonData._links.update).to.have.property(\"href\", \"/api/customers/1\");\r",
+									"    pm.expect(jsonData._links.update).to.have.property(\"method\", \"PUT\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/customers/1",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one phone",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay to process\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.jsonBody('id');\r",
+									"    pm.response.to.not.have.jsonBody('error');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body contains phone\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData).to.have.property('name');\r",
+									"    pm.expect(jsonData.name).to.eql('Phone 0');\r",
+									"    pm.expect(jsonData).to.have.property('quantity');\r",
+									"    pm.expect(jsonData.quantity).to.be.within(0, 100);\r",
+									"    pm.expect(jsonData).to.have.property('model');\r",
+									"    pm.expect(jsonData.model).to.satisfy(function (model) {\r",
+									"        return model >= 'A' && model <= 'F'; // Model should be between 'A' and 'F' (inclusive)\r",
+									"    });\r",
+									"    pm.expect(jsonData).to.have.property('brand');\r",
+									"    pm.expect(jsonData.brand).to.satisfy(function (brand) {\r",
+									"        var allowedBrands = ['Apple', 'Samsung', 'Huawei', 'Xiaomi', 'Oppo', 'Vivo'];\r",
+									"        return allowedBrands.includes(brand); // Brand should be one of the allowed brands\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/phones/1",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"phones",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one phone Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains an error message\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"Phone not found\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/phones/4000",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"phones",
+								"4000"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Not autenticated",
+			"item": [
+				{
+					"name": "Get all the customers no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains an error message\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"JWT Token not found\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/customers?page=1&limit=100",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the clients no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains an error message\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"JWT Token not found\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/clients",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the phones no auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains an error message\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"JWT Token not found\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/phones",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"phones"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin autenticated",
+			"item": [
+				{
+					"name": "Login Check Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"if (responseJson.token) {\r",
+									"    pm.environment.set(\"access_token\", responseJson.token);\r",
+									"}\r",
+									"\r",
+									"// Check if the status code is 200 (OK)\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if the response body has a token\r",
+									"pm.test(\"Response should have a JWT token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('token');\r",
+									"});\r",
+									"\r",
+									"// Check if token is not empty\r",
+									"pm.test(\"Token is not empty\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"// Optionally, check if the token has correct format (simple regex check)\r",
+									"pm.test(\"Token is in JWT format\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var jwtRegex = /^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$/;\r",
+									"    pm.expect(jwtRegex.test(jsonData.token)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin@bilemo.com\",\r\n    \"password\": \"Gandalf234@7\"\r\n}"
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/login_check",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"login_check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all the clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test: Check response status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response is an array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Test: Check the length of the response array is as expected\r",
+									"pm.test(\"Response array length is 2\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.length(2);\r",
+									"});\r",
+									"\r",
+									"// Test: Check the structure and content of each object in the array\r",
+									"pm.test(\"Each object in the array has the expected structure and content\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    jsonData.forEach(function (client) {\r",
+									"        pm.expect(client).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(client).to.have.property(\"email\").that.is.a(\"string\");\r",
+									"        pm.expect(client._links).to.have.property(\"self\");\r",
+									"        pm.expect(client._links.self).to.have.property(\"href\").that.is.a(\"string\");\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/clients?page=1&limit=5",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"clients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/clients/1",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"clients",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one customer of admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"// Test: Check response body is a valid JSON\r",
+									"pm.test(\"Response body is a valid JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the email\r",
+									"pm.test(\"Response contains the email\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"email\", \"baragouin@gmail.com\");\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the delete link\r",
+									"pm.test(\"Response contains the delete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"delete\");\r",
+									"    pm.expect(jsonData._links.delete).to.have.property(\"href\", \"/api/customers/3\");\r",
+									"    pm.expect(jsonData._links.delete).to.have.property(\"method\", \"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Test: Check if the response contains the update link\r",
+									"pm.test(\"Response contains the update link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"update\");\r",
+									"    pm.expect(jsonData._links.update).to.have.property(\"href\", \"/api/customers/3\");\r",
+									"    pm.expect(jsonData._links.update).to.have.property(\"method\", \"PUT\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/customers/3",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"customers",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJson = pm.response.json();\r",
+							"if (responseJson.token) {\r",
+							"    pm.environment.set(\"access_token\", responseJson.token);\r",
+							"}\r",
+							"\r",
+							"// Check if the status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response body has a token\r",
+							"pm.test(\"Response should have a JWT token\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('token');\r",
+							"});\r",
+							"\r",
+							"// Check if token is not empty\r",
+							"pm.test(\"Token is not empty\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.token).to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							"// Optionally, check if the token has correct format (simple regex check)\r",
+							"pm.test(\"Token is in JWT format\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var jwtRegex = /^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$/;\r",
+							"    pm.expect(jwtRegex.test(jsonData.token)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"margesimpson@bilemo.com\",\r\n    \"password\": \"MargeSimpson3224#\"\r\n}"
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/login_check",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login_check"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test: Check response status code\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Test: Check response body is a valid JSON\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the email\r",
+							"pm.test(\"Response contains the email\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"email\", \"journal@gmail.com\");\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the delete link\r",
+							"pm.test(\"Response contains the delete link\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._links).to.have.property(\"delete\");\r",
+							"    pm.expect(jsonData._links.delete.href).to.match(/\\/api\\/customers\\/\\d+/); // Matches any \"/api/customers/{integer}\"\r",
+							"    pm.expect(jsonData._links.delete).to.have.property(\"method\", \"DELETE\");\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the update link\r",
+							"pm.test(\"Response contains the update link\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._links).to.have.property(\"update\");\r",
+							"    pm.expect(jsonData._links.update.href).to.match(/\\/api\\/customers\\/\\d+/); // Matches any \"/api/customers/{integer}\"\r",
+							"    pm.expect(jsonData._links.update).to.have.property(\"method\", \"PUT\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"journal@gmail.com\",\r\n    \"password\": \"jokari892\"\r\n}"
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/customers",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test: Check response status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Test: Check response body is a valid JSON\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the updated email\r",
+							"pm.test(\"Response contains the updated email\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"email\", \"newemail@example.com\");\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the updated password\r",
+							"pm.test(\"Response contains the updated password\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"password\");\r",
+							"    pm.expect(jsonData.password).to.not.equal(\"newpassword\");\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the delete link\r",
+							"pm.test(\"Response contains the delete link\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._links).to.have.property(\"delete\");\r",
+							"    pm.expect(jsonData._links.delete).to.have.property(\"href\", \"/api/customers/1\");\r",
+							"    pm.expect(jsonData._links.delete).to.have.property(\"method\", \"DELETE\");\r",
+							"});\r",
+							"\r",
+							"// Test: Check if the response contains the update link\r",
+							"pm.test(\"Response contains the update link\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._links).to.have.property(\"update\");\r",
+							"    pm.expect(jsonData._links.update).to.have.property(\"href\", \"/api/customers/1\");\r",
+							"    pm.expect(jsonData._links.update).to.have.property(\"method\", \"PUT\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"newemail@example.com\",\r\n    \"password\":\"newpassword\"\r\n}"
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/customers/1",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete customer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/customers/1",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
