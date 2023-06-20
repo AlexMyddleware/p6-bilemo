@@ -33,9 +33,10 @@ bash
 
 ## Configuration
 
-Copy .env to .env.local and update your database credentials:
+Copy .env to .env.local and update your database credentials.
 
-
+## Note on the .ps1 scripts and .sh scripts
+You will need to update the scripts to match your local setup. The scripts are provided as an example and may not work out of the box.
 
 ### For PostgreSQL with Docker
 DATABASE_URL="postgresql://app:!ChangeMe!@database:5432/app?serverVersion=15&charset=utf8"
