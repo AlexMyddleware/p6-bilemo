@@ -37,33 +37,31 @@ Copy .env to .env.local and update your database credentials:
 
 
 
-# For PostgreSQL with Docker
+### For PostgreSQL with Docker
 DATABASE_URL="postgresql://app:!ChangeMe!@database:5432/app?serverVersion=15&charset=utf8"
-# For MySQL with Laragon or local setup
+### For MySQL with Laragon or local setup
 DATABASE_URL="mysql://root:root@127.0.0.1:3306/bilemo?serverVersion=5.7"
 
 Update the same for the test environment in .env.test:
 
 env
 
-# For PostgreSQL with Docker
+### For PostgreSQL with Docker
 DATABASE_URL="postgresql://app:!ChangeMe!@database_test:5432/test_db"
-# For MySQL with Laragon or local setup
+### For MySQL with Laragon or local setup
 DATABASE_URL="mysql://root:root@127.0.0.1:3306/bilemo?serverVersion=5.7"
 
 ## Docker Usage
 
 Bilemo is Docker ready. To launch the Docker environment, you can use provided script files:
 
-On Windows (PowerShell):
+### On Windows (PowerShell):
 
-powershell
 
 `./start.ps1`
 
-On Linux/MacOS:
+### On Linux/MacOS:
 
-bash
 
 `./start.sh`
 
@@ -71,39 +69,32 @@ You can also manage the Docker environment manually:
 
 To build and run the Docker image:
 
-bash
-
 docker-compose up -d
 
 To stop and remove containers, networks and volumes:
 
-bash
 
 docker-compose down
-
-Testing
-
-
 
 ## Tests
 Bilemo is built with testing in mind. You can run tests using the following command:
 
-local
+### local
 
 `php ./vendor/bin/phpunit --colors --testdox`
 
-Docker
+### Docker
 
 `docker-compose -f docker-compose.test.yml exec php ./vendor/bin/phpunit --colors --testdox`
 For the tests, change your doctrine configuration based on your environment in config/packages/doctrine.yaml:
 
-Running a single test
+### Running a single test
 
-Local
+#### Local
 php ./vendor/bin/phpunit --colors --testdox --filter '/::testGetAllCustomersOfTheAdminClient$/'
 
 
-Docker
+#### Docker
 docker-compose -f docker-compose.test.yml exec php ./vendor/bin/phpunit --colors --testdox --filter '/::testGetAllCustomersOfTheAdminClient$/'
 
 
