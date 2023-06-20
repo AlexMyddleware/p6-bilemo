@@ -27,8 +27,6 @@ bash
 
 Next, install the PHP dependencies using Composer:
 
-bash
-
 `composer install`
 
 ## Configuration
